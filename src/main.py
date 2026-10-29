@@ -11,6 +11,7 @@ from pathlib import Path
 
 from detections import DETECTORS
 from parser import parse_evtx
+from report import build_report, sort_findings
 
 
 def main() -> int:
@@ -39,12 +40,17 @@ def main() -> int:
     findings = []
     for detector in DETECTORS:
         findings.extend(detector(df))
+    findings = sort_findings(findings)
     print(f"{len(findings)} finding(s)")
+    for f in findings:
+        print(f"  [{f['severity'].upper():6}] {f['pattern']} ({f['mitre']}) at {f['start'][:19]}")
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "findings.json").write_text(json.dumps(findings, indent=2))
-    print(f"Wrote {out / 'findings.json'}")
+    (out / "report.html").write_text(
+        build_report(findings, df, Path(args.evtx).name, skipped), encoding="utf-8")
+    print(f"Wrote {out / 'findings.json'} and {out / 'report.html'}")
     return 0
 
 

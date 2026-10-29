@@ -20,7 +20,8 @@ A command line tool that reads Windows Security event logs (`.evtx`) and turns r
 | Log clearing (1102) | Planned |
 | MITRE ATT&CK mapping on every finding | In progress |
 | Logon baseline and anomaly scoring | Planned |
-| HTML timeline dashboard | Planned |
+| HTML report with severity-sorted findings and ATT&CK links | Done |
+| Interactive timeline dashboard | Planned |
 
 ## Setup
 
@@ -40,7 +41,7 @@ pip install -r requirements.txt
 python src/main.py path/to/Security.evtx --out output/
 ```
 
-Results are written to `output/findings.json`. Add `-v` for debug output.
+Results are written to `output/report.html` (open it in a browser) and `output/findings.json` (the same findings as data). Add `-v` for debug output.
 
 Sample logs from the public EVTX-ATTACK-SAMPLES collection are in `data/samples/` (see the README there for what each one contains and its license). Try one:
 
