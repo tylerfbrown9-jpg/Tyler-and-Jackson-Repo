@@ -14,8 +14,10 @@ A command line tool that reads Windows Security event logs (`.evtx`) and turns r
 |---|---|
 | Parse `.evtx` into a normalized table, skipping corrupt records | Done |
 | Brute force detection (4625 bursts, followed by 4624 success) | Done |
-| Privilege escalation / suspicious process creation (4672, 4688) | Planned |
-| Log clearing, account creation, group changes (1102, 4720, 4732) | Planned |
+| Suspicious process creation (4688): known attacker tools, user-writable folders | Done |
+| Privileged logon followed by process execution (4672 + 4688) | Done |
+| Account creation and privileged group changes (4720, 4728, 4732, 4756) | Done |
+| Log clearing (1102) | Planned |
 | MITRE ATT&CK mapping on every finding | In progress |
 | Logon baseline and anomaly scoring | Planned |
 | HTML timeline dashboard | Planned |
@@ -46,7 +48,7 @@ Sample logs from the public EVTX-ATTACK-SAMPLES collection are in `data/samples/
 python src/main.py data/samples/DE_RDP_Tunnel_5156.evtx
 ```
 
-The parser handles all of them. The only detector so far looks for brute force, and none of the samples contain failed-logon bursts, so expect "0 finding(s)" until more detectors are added or you generate a log in a lab VM.
+The parser handles all of them. Findings you should see: plink.exe in `DE_RDP_Tunnel_5156` (T1572), Guest and Network Service added to Administrators in `Network_Service_Guest_added_to_admins_4732` (T1098), and the fake computer account in `DE_Fake_ComputerAccount_4720` (T1136). No sample contains a burst of failed logons, so brute force detection needs a log from a lab VM.
 
 ## Repository layout
 
