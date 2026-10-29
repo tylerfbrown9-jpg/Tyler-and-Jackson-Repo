@@ -17,6 +17,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Analyze a Windows Security .evtx log.")
     ap.add_argument("evtx", help="path to the .evtx file")
     ap.add_argument("--out", default="output", help="directory for results (default: output/)")
+    ap.add_argument("--limit", type=int, help="only read the first N records (quick test)")
     ap.add_argument("-v", "--verbose", action="store_true", help="show debug output")
     args = ap.parse_args()
 
@@ -24,7 +25,7 @@ def main() -> int:
                         format="%(levelname)s: %(message)s")
 
     try:
-        df, skipped = parse_evtx(args.evtx)
+        df, skipped = parse_evtx(args.evtx, limit=args.limit)
     except (FileNotFoundError, OSError) as exc:
         print(f"Error: {exc}")
         return 1

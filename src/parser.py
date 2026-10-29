@@ -38,8 +38,10 @@ def _parse_record(xml_text: str) -> dict:
     return row
 
 
-def parse_evtx(path: str | Path) -> tuple[pd.DataFrame, int]:
+def parse_evtx(path: str | Path, limit: int | None = None) -> tuple[pd.DataFrame, int]:
     """Parse an .evtx file.
+
+    limit stops after that many records (handy for a quick test on a big log).
 
     Returns (dataframe, skipped) where skipped is the number of records
     that could not be parsed.
@@ -50,7 +52,11 @@ def parse_evtx(path: str | Path) -> tuple[pd.DataFrame, int]:
 
     rows, skipped = [], 0
     with Evtx(str(path)) as log_file:
-        for record in log_file.records():
+        for i, record in enumerate(log_file.records(), start=1):
+            if limit and i > limit:
+                break
+            if i % 5000 == 0:
+                log.info("  ...read %d records", i)
             try:
                 rows.append(_parse_record(record.xml()))
             except Exception as exc:  # corrupt or truncated record
