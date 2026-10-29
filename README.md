@@ -40,6 +40,14 @@ python src/main.py path/to/Security.evtx --out output/
 
 Results are written to `output/findings.json`. Add `-v` for debug output.
 
+Sample logs from the public EVTX-ATTACK-SAMPLES collection are in `data/samples/` (see the README there for what each one contains and its license). Try one:
+
+```bash
+python src/main.py data/samples/DE_RDP_Tunnel_5156.evtx
+```
+
+The parser handles all of them. The only detector so far looks for brute force, and none of the samples contain failed-logon bursts, so expect "0 finding(s)" until more detectors are added or you generate a log in a lab VM.
+
 ## Repository layout
 
 ```

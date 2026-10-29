@@ -7,6 +7,7 @@ venv/
 # Never commit real logs. This repo is public.
 # Put sanitized/synthetic samples in data/ and force-add them (git add -f).
 *.evtx
+!data/samples/*.evtx
 data/raw/
 
 # Tool output

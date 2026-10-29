@@ -30,6 +30,10 @@ def main() -> int:
         return 1
 
     print(f"Parsed {len(df)} events ({skipped} records skipped)")
+    if not df.empty:
+        # Quick overview of what the log contains, most common event IDs first.
+        counts = df["event_id"].value_counts().head(8)
+        print("Top event IDs: " + ", ".join(f"{k} (x{v})" for k, v in counts.items()))
 
     findings = []
     for detector in DETECTORS:
