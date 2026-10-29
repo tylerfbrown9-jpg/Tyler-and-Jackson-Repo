@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Never commit real logs. This repo is public.
+# Put sanitized/synthetic samples in data/ and force-add them (git add -f).
+*.evtx
+data/raw/
+
+# Tool output
+output/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
