@@ -2,7 +2,7 @@
 
 IT 360 final project by Tyler Brown and Jackson.
 
-**Video presentation:** _link goes here (unlisted YouTube/Vimeo)_
+**Video presentation:**
 
 ## Overview
 
