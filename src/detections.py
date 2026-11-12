@@ -11,6 +11,18 @@ FAILED_LOGON = 4625
 SUCCESS_LOGON = 4624
 
 
+def _source_key(df: pd.DataFrame) -> pd.Series:
+    """Where a logon attempt came from: the IP address, or the workstation for local logons.
+
+    Console and local logons have no IP ("-" or blank), so without this
+    fallback a local brute force would be invisible.
+    """
+    ip = df["IpAddress"].fillna("").astype(str).str.strip()
+    ws = df["WorkstationName"].fillna("").astype(str) if "WorkstationName" in df else ""
+    local = "local:" + ws if isinstance(ws, pd.Series) else "local"
+    return ip.where(~ip.isin(["", "-"]), local)
+
+
 def detect_brute_force(
     df: pd.DataFrame,
     threshold: int = 5,
@@ -26,13 +38,12 @@ def detect_brute_force(
         return []
 
     findings = []
-    failures = df[df["event_id"] == FAILED_LOGON]
-    successes = df[df["event_id"] == SUCCESS_LOGON]
+    logons = df[df["event_id"].isin([FAILED_LOGON, SUCCESS_LOGON])].copy()
+    logons["_src"] = _source_key(logons)
+    failures = logons[logons["event_id"] == FAILED_LOGON]
+    successes = logons[logons["event_id"] == SUCCESS_LOGON]
 
-    # Group by source address; "-" and blank mean a local/unknown source.
-    for ip, group in failures.groupby("IpAddress"):
-        if ip in (None, "", "-"):
-            continue
+    for src, group in failures.groupby("_src"):
         times = group["timestamp"].reset_index(drop=True)
         win = pd.Timedelta(window)
 
@@ -42,7 +53,7 @@ def detect_brute_force(
             if end - start >= threshold:
                 last_fail = times[end - 1]
                 later_success = successes[
-                    (successes["IpAddress"] == ip)
+                    (successes["_src"] == src)
                     & (successes["timestamp"] > last_fail)
                     & (successes["timestamp"] <= last_fail + pd.Timedelta(success_within))
                 ]
@@ -50,7 +61,7 @@ def detect_brute_force(
                     "pattern": "Brute force logon attempts",
                     "mitre": "T1110",
                     "severity": "high" if not later_success.empty else "medium",
-                    "source": ip,
+                    "source": src,
                     "start": times[start].isoformat(),
                     "end": last_fail.isoformat(),
                     "failed_count": int(end - start),
