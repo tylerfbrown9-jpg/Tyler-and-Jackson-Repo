@@ -20,7 +20,8 @@ A command line tool that reads Windows Security event logs (`.evtx`) and turns r
 | Log clearing (1102) | Planned |
 | MITRE ATT&CK mapping on every finding | In progress |
 | Logon baseline and anomaly scoring | Planned |
-| HTML report with severity-sorted findings and ATT&CK links | Done |
+| HTML report: summary, per-file table, severity-sorted findings, ATT&CK links, filters | Done |
+| Analyze many logs or whole folders in one run, one combined report | Done |
 | Interactive timeline dashboard | Planned |
 
 ## Setup
@@ -59,7 +60,24 @@ python src\main.py data\samples\DE_RDP_Tunnel_5156.evtx
 
 Then open `output\report.html` in a browser (`start output\report.html` on Windows). The same findings are in `output\findings.json`.
 
-Options: `--out DIR` changes the output folder, `--limit N` reads only the first N records (quick test on a big log), `-v` shows debug output.
+### Analyze many logs at once
+
+Pass any mix of files and folders. Folders are searched recursively, each log is analyzed on its own, and everything goes into one combined report:
+
+```
+python src\main.py data\datasets data\samples
+python src\main.py data\datasets\deepblue\smb-password-guessing-security.evtx data\samples
+```
+
+All 28 included logs take about 75 seconds.
+
+### Reading the report
+
+- **Summary:** totals, a plain-language overview, the most serious findings, and a table by ATT&CK technique.
+- **Files analyzed:** events, findings per severity and the most common event IDs for each log, plus any logs that could not be read.
+- **Findings:** sorted by severity. Repeats of the same finding for the same file, account and host are merged into one row with a count (`findings.json` keeps every finding). Use the severity checkboxes and the search box to filter, for example by technique ID, file name or account.
+
+Options: `--out DIR` changes the output folder, `--limit N` reads only the first N records of each log (quick test on big logs), `-v` shows debug output.
 
 To analyze your own log, export it from an admin terminal on a lab machine, then pass the file path:
 

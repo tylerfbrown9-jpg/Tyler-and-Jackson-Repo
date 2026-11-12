@@ -11,6 +11,8 @@ Run any of them the same way:
 python src/main.py data/datasets/deepblue/smb-password-guessing-security.evtx
 ```
 
+To analyze everything at once into one report: `python src/main.py data/datasets data/samples`.
+
 Also see `data/samples/` for the first set of samples (EVTX-ATTACK-SAMPLES).
 
 ## DeepBlueCLI sample logs (`deepblue/`)
