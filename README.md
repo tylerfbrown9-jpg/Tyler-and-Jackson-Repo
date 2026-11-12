@@ -92,7 +92,7 @@ data/       sanitized sample logs for demos
 
 ## Data and privacy
 
-This repository is public. Do not commit real logs. Sample data in `data/` must be synthetic (Atomic Red Team in a lab VM) or from public datasets such as Mordor/Security Datasets.
+This repository is public. Do not commit real logs. Everything in `data/` comes from free public datasets, with licenses and sources listed in each folder.
 
 ## License
 
